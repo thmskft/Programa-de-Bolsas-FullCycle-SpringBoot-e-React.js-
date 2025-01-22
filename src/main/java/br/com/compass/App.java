@@ -2,6 +2,8 @@ package br.com.compass;
 
 import java.util.Scanner;
 
+import static br.com.compass.Account.createAccount;
+
 public class App {
     
     public static void main(String[] args) {
@@ -25,14 +27,16 @@ public class App {
             System.out.print("Choose an option: ");
 
             int option = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.println();
 
             switch (option) {
                 case 1:
                     bankMenu(scanner);
                     return;
                 case 2:
-                    // ToDo...
-                    System.out.println("Account Opening.");
+                    createAccount(scanner);
                     break;
                 case 0:
                     running = false;
@@ -56,6 +60,7 @@ public class App {
             System.out.println("|| 0. Exit                 ||");
             System.out.println("=============================");
             System.out.print("Choose an option: ");
+            System.out.println();
 
             int option = scanner.nextInt();
 
