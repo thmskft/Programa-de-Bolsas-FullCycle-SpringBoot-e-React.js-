@@ -1,8 +1,15 @@
 package br.com.compass;
 
+import br.com.compass.classes.User;
+import br.com.compass.classes.UserAccount;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.Scanner;
 
-import static br.com.compass.Account.createAccount;
+import static br.com.compass.classes.User.initializeUser;
+
 
 public class App {
     
@@ -10,8 +17,8 @@ public class App {
         Scanner scanner = new Scanner(System.in);
 
         mainMenu(scanner);
-        
-        scanner.close();
+
+
         System.out.println("Application closed");
     }
 
@@ -36,10 +43,12 @@ public class App {
                     bankMenu(scanner);
                     return;
                 case 2:
-                    createAccount(scanner);
+                    initializeUser();
                     break;
                 case 0:
                     running = false;
+                    System.out.println("Exiting... Goodbye!");
+                    System.exit(0);
                     break;
                 default:
                     System.out.println("Invalid option! Please try again.");
