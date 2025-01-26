@@ -1,21 +1,39 @@
 package br.com.compass.classes;
 
+import br.com.compass.DAO.UserDAO;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+import static br.com.compass.classes.UserAccount.accountInfo;
+
+@Entity
 public class User {
+
+    @Column(unique = true)
     private String name;
-    private long cpf;
+
+    @Id
+    private String cpf;
+
+    @OneToOne(mappedBy = "user")
+    private UserAccount userAccount;
+
     private LocalDate birth;
     private String phoneNumber;
 
-    // Class Constructor
+    // Standard Constructor
     public User() {
+    }
+
+    // Class Constructor
+    public User(UserDAO userDAO) {
         Scanner scanner = new Scanner(System.in);
-        this.name = obtainName(scanner);
-        this.cpf = obtainCPF(scanner);
+        this.name = obtainName(scanner, userDAO);
+        this.cpf = obtainCPF(scanner, userDAO);
         this.birth = obtainBirthDate(scanner);
         this.phoneNumber = obtainPhoneNumber(scanner);
     }
@@ -42,14 +60,18 @@ public class User {
     }
 
     // Method to force user input the right format for name
-    private String obtainName(Scanner scanner) {
+    private String obtainName(Scanner scanner, UserDAO userDAO) {
         String name;
         while (true) {
-            System.out.print("First and last name: ");
+            System.out.print("Enter your full name: ");
             name = scanner.nextLine();
             try {
                 isNameValid(name);
-                break;
+                if (userDAO.isNameExists(name)) {
+                    System.out.println("This name is already registered. Please enter a different name.");
+                } else {
+                    break;
+                }
             } catch (IllegalArgumentException e) {
                 System.out.println("Error: " + e.getMessage() + ", try again.");
             }
@@ -58,7 +80,7 @@ public class User {
     }
 
     // is Valid CPF
-    private long isValidCPF(String cpf) {
+    private String isValidCPF(String cpf) {
         if (cpf == null || cpf.isBlank()) {
             throw new IllegalArgumentException("The document number cannot be empty");
         }
@@ -67,24 +89,27 @@ public class User {
             throw new IllegalArgumentException("Wrong format! Only accepts (xxx.xxx.xxx-xx) format");
         }
 
-        String formattedCPF = cpf.replaceAll("[.\\-]", "");
-
-        return Long.parseLong(formattedCPF);
+        return cpf.replaceAll("[.\\-]", "");
     }
 
     // Method to force user input the right format for CPF
-    private long obtainCPF(Scanner scanner) {
+    private String obtainCPF(Scanner scanner, UserDAO userDAO) {
         String cpf;
         while (true) {
             System.out.print("Enter your CPF number: ");
             cpf = scanner.nextLine();
             try {
-                return isValidCPF(cpf);
+                cpf = isValidCPF(cpf);
+                if (userDAO.isCpfExists(cpf)) {
+                    System.out.println("This CPF is already registered. Please enter a different CPF.");
+                } else {
+                    break;
+                }
             } catch (IllegalArgumentException e) {
                 System.out.println("Error: " + e.getMessage() + ", try again.");
             }
         }
-
+        return cpf;
     }
 
     // is Valid birthdate
@@ -153,6 +178,56 @@ public class User {
     }
 
 
+    // Menu method
+    public static void visualMenu(){
+        String menu = "||Welcome to your Opening Account Menu||";
+        System.out.println("=".repeat(menu.length()));
+        System.out.println(menu);
+        System.out.println("=".repeat(menu.length()));
+    }
+
+
+    public static User initializeUser() {
+        visualMenu();
+        UserDAO userDAO = new UserDAO();
+        Scanner scanner = new Scanner(System.in);
+
+        User user = new User(userDAO);
+
+
+        UserAccount userAccount = new UserAccount(user, scanner);
+
+        userAccount.setUser(user);
+
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("myPU");
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+
+        try {
+            em.persist(user);
+
+            em.persist(userAccount);
+
+            em.getTransaction().commit();
+
+        } catch (Exception e) {
+
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+            emf.close();
+        }
+
+        accountInfo(user, userAccount);
+
+        return user;
+    }
+
+
+
 
     // Getters and Setters
     public String getName() {
@@ -163,11 +238,11 @@ public class User {
         this.name = name;
     }
 
-    public long getCpf() {
+    public String getCpf() {
         return cpf;
     }
 
-    public void setCpf(long cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
 
