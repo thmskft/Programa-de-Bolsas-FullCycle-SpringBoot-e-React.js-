@@ -1,4 +1,4 @@
-package br.com.compass;
+package br.com.compass.classes;
 
 public enum TypeAccount {
     SAVINGS_ACCOUNT,
