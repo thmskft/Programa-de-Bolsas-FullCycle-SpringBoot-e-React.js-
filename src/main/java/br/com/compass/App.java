@@ -1,13 +1,9 @@
 package br.com.compass;
 
-import br.com.compass.classes.User;
-import br.com.compass.classes.UserAccount;
+import br.com.compass.DAO.UserDAO;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.Scanner;
-
+import static br.com.compass.classes.Login.loginMenu;
 import static br.com.compass.classes.User.initializeUser;
 
 
@@ -23,9 +19,8 @@ public class App {
     }
 
     public static void mainMenu(Scanner scanner) {
-        boolean running = true;
 
-        while (running) {
+        while (true) {
             System.out.println("========= Main Menu =========");
             System.out.println("|| 1. Login                ||");
             System.out.println("|| 2. Account Opening      ||");
@@ -33,33 +28,38 @@ public class App {
             System.out.println("=============================");
             System.out.print("Choose an option: ");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            int option = -1;
+            while (option != 1 && option != 2 && option != 0) {
+                try {
+                    option = Integer.parseInt(scanner.nextLine());
+                    if (option != 1 && option != 2 && option != 0) {
+                        System.out.print("Invalid option! \nPlease choose between 1, 2 or 0: ");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.print("Invalid input, try again: ");
+                }
+            }
 
             System.out.println();
 
             switch (option) {
                 case 1:
-                    bankMenu(scanner);
+                    loginMenu(scanner, new UserDAO());
                     return;
                 case 2:
                     initializeUser();
                     break;
                 case 0:
-                    running = false;
                     System.out.println("Exiting... Goodbye!");
                     System.exit(0);
                     break;
-                default:
-                    System.out.println("Invalid option! Please try again.");
             }
         }
     }
 
     public static void bankMenu(Scanner scanner) {
-        boolean running = true;
 
-        while (running) {
+        while (true) {
             System.out.println("========= Bank Menu =========");
             System.out.println("|| 1. Deposit              ||");
             System.out.println("|| 2. Withdraw             ||");
@@ -72,6 +72,7 @@ public class App {
             System.out.println();
 
             int option = scanner.nextInt();
+            scanner.nextLine();
 
             switch (option) {
                 case 1:
@@ -95,9 +96,8 @@ public class App {
                     System.out.println("Bank Statement.");
                     break;
                 case 0:
-                    // ToDo...
-                    System.out.println("Exiting...");
-                    running = false;
+                    mainMenu(scanner);
+                    scanner.nextLine();
                     return;
                 default:
                     System.out.println("Invalid option! Please try again.");
