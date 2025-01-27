@@ -61,7 +61,7 @@ public class UserAccount {
 
     // Method to select account type
     private String obtainAccountType(Scanner scanner) {
-        String accountType = "";
+        String accountType;
         System.out.println("\nSelect the type of account:");
         System.out.println("1 - Current Account");
         System.out.println("2 - Savings Account");
@@ -124,9 +124,11 @@ public class UserAccount {
         Scanner scanner = new Scanner(System.in);
         int option = -1;
         do {
-            System.out.println("\nReturn to Main Menu?: ");
-            System.out.println("Press 1 - Main Menu");
-            System.out.println("Press 2 - Exit");
+            System.out.println("\n==================");
+            System.out.println("|| 1. Main Menu ||");
+            System.out.println("|| 2. Exit      ||");
+            System.out.println("==================");
+            System.out.print("Choose an option: ");
 
             try {
                 option = scanner.nextInt();
@@ -141,11 +143,11 @@ public class UserAccount {
                         System.exit(0);
                         break;
                     default:
-                        System.out.println("Invalid option, please choose 1 or 2.");
+                        System.out.print("Invalid option: ");
                         break;
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number (1 or 2).");
+                System.out.print("Invalid input: ");
                 scanner.nextLine();
             }
         } while (option != 1 && option != 2);
