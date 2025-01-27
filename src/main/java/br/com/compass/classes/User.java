@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+import static br.com.compass.App.mainMenu;
 import static br.com.compass.classes.UserAccount.accountInfo;
 
 @Entity
@@ -67,11 +68,7 @@ public class User {
             name = scanner.nextLine();
             try {
                 isNameValid(name);
-                if (userDAO.isNameExists(name)) {
-                    System.out.println("This name is already registered. Please enter a different name.");
-                } else {
-                    break;
-                }
+                break;
             } catch (IllegalArgumentException e) {
                 System.out.println("Error: " + e.getMessage() + ", try again.");
             }
@@ -101,7 +98,34 @@ public class User {
             try {
                 cpf = isValidCPF(cpf);
                 if (userDAO.isCpfExists(cpf)) {
-                    System.out.println("This CPF is already registered. Please enter a different CPF.");
+                    System.out.println("\nThis CPF is already registered.");
+
+                    System.out.println("=======================");
+                    System.out.println("|| 1. Enter a new CPF ||");
+                    System.out.println("|| 2. Main Menu       ||");
+                    System.out.println("|| 3. Exit            ||");
+                    System.out.println("========================");
+                    System.out.print("Choose an option: ");
+
+                    int option = -1;
+                    while (option != 1 && option != 2 && option != 3) {
+                        try {
+                            option = Integer.parseInt(scanner.nextLine());
+                            if (option == 1) {
+                                break;
+                            } else if (option == 2) {
+                                mainMenu(scanner);
+                                return null;
+                            } else if (option == 3) {
+                                System.out.println("Exiting... Goodbye!");
+                                System.exit(0);
+                            } else {
+                                System.out.println("Invalid option! Please choose 1, 2, or 3.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid number (1, 2, or 3).");
+                        }
+                    }
                 } else {
                     break;
                 }
